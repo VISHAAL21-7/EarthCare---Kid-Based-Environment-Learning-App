@@ -23,7 +23,7 @@ const earthConfig = {
     animation: 'animate-rotate-earth [animation-duration:60s]', // Slower rotation
     decorations: <>
          <div className="absolute top-1/2 left-1/2 w-10 h-px bg-black/50 transform -rotate-45 -translate-x-8 -translate-y-4 z-20"></div>
-         <span className="absolute top-[55%] left-[15%] text-2xl z-20">🥀</span>
+         <span className="absolute top-[55%] left-[15%] text-2xl z-20 animate-sway">🥀</span>
          <span className="absolute top-[25%] right-[10%] text-4xl text-gray-400 animate-float">☁️</span>
     </>,
   },
