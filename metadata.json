@@ -1,0 +1,5 @@
+{
+  "name": "EarthCare MVP",
+  "description": "A dual-mode environmental awareness app for children to learn about and care for the planet, featuring interactive tasks, a reward system, and an admin panel for parents or developers.",
+  "requestFramePermissions": []
+}
