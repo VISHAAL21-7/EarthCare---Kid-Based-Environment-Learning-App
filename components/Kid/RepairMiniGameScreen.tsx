@@ -27,7 +27,7 @@ const EarthMascot = ({ progress }: { progress: number }) => {
   );
 };
 
-type TrashType = 'recyclable' | 'biodegradable';
+type TrashType = 'non-biodegradable' | 'biodegradable';
 
 interface TrashItem {
   id: number;
@@ -40,13 +40,20 @@ interface TrashItem {
 }
 
 const TRASH_CONFIG = [
-  { emoji: '🍾', type: 'recyclable' as TrashType },
-  { emoji: '🥫', type: 'recyclable' as TrashType },
-  { emoji: '📰', type: 'recyclable' as TrashType },
-  { emoji: '🥤', type: 'recyclable' as TrashType },
-  { emoji: '🛍️', type: 'recyclable' as TrashType },
-  { emoji: '📦', type: 'recyclable' as TrashType },
-  { emoji: '🍎', type: 'biodegradable' as TrashType },
+  // Non-Biodegradable
+  { emoji: '🍾', type: 'non-biodegradable' as TrashType }, // Bottle
+  { emoji: '🥫', type: 'non-biodegradable' as TrashType }, // Can
+  { emoji: '🥤', type: 'non-biodegradable' as TrashType }, // Plastic Cup
+  { emoji: '🛍️', type: 'non-biodegradable' as TrashType }, // Plastic Bag
+  { emoji: '🔋', type: 'non-biodegradable' as TrashType }, // Battery
+  { emoji: '🔩', type: 'non-biodegradable' as TrashType }, // Bolt
+  // Biodegradable
+  { emoji: '🍎', type: 'biodegradable' as TrashType }, // Apple core
+  { emoji: '🍌', type: 'biodegradable' as TrashType }, // Banana peel
+  { emoji: '🌿', type: 'biodegradable' as TrashType }, // Leaf
+  { emoji: '🦴', type: 'biodegradable' as TrashType }, // Bone
+  { emoji: '🍞', type: 'biodegradable' as TrashType }, // Bread
+  { emoji: '🥚', type: 'biodegradable' as TrashType }, // Egg
 ];
 
 const TOTAL_ITEMS_TO_CLEAN = 10;
@@ -59,11 +66,11 @@ const RepairMiniGameScreen: React.FC<{
   const [items, setItems] = useState<TrashItem[]>([]);
   const [cleanedCount, setCleanedCount] = useState(0);
   const [draggedItem, setDraggedItem] = useState<TrashItem | null>(null);
-  const [lastSuccessBin, setLastSuccessBin] = useState<'recycle' | 'compost' | null>(null);
+  const [lastSuccessBin, setLastSuccessBin] = useState<'non-bio' | 'bio' | null>(null);
   
   const gameAreaRef = useRef<HTMLDivElement>(null);
-  const recycleBinRef = useRef<HTMLDivElement>(null);
-  const compostBinRef = useRef<HTMLDivElement>(null);
+  const nonBioBinRef = useRef<HTMLDivElement>(null);
+  const bioBinRef = useRef<HTMLDivElement>(null);
   const nextId = useRef(0);
 
   useEffect(() => {
@@ -146,15 +153,15 @@ const RepairMiniGameScreen: React.FC<{
     };
 
     let droppedCorrectly = false;
-    if (isOverlapping(recycleBinRef)) {
-      if (draggedItem.type === 'recyclable') {
+    if (isOverlapping(nonBioBinRef)) {
+      if (draggedItem.type === 'non-biodegradable') {
         droppedCorrectly = true;
-        setLastSuccessBin('recycle');
+        setLastSuccessBin('non-bio');
       }
-    } else if (isOverlapping(compostBinRef)) {
+    } else if (isOverlapping(bioBinRef)) {
       if (draggedItem.type === 'biodegradable') {
         droppedCorrectly = true;
-        setLastSuccessBin('compost');
+        setLastSuccessBin('bio');
       }
     }
 
@@ -220,13 +227,13 @@ const RepairMiniGameScreen: React.FC<{
           )}
         </main>
         <footer className="h-32 bg-green-800/50 flex justify-around items-center p-4 border-t-8 border-green-900/50 z-10">
-          <div ref={recycleBinRef} className={`flex flex-col items-center text-white p-2 rounded-2xl transition-transform duration-200 ${lastSuccessBin === 'recycle' ? 'animate-bounce' : ''}`}>
-            <div className="text-6xl drop-shadow-lg">♻️</div>
-            <p className="font-bold">Recycle</p>
+          <div ref={nonBioBinRef} className={`flex flex-col items-center text-white p-2 rounded-2xl transition-transform duration-200 ${lastSuccessBin === 'non-bio' ? 'animate-bounce' : ''}`}>
+            <div className="text-6xl drop-shadow-lg">🗑️</div>
+            <p className="font-bold text-sm">Non-Biodegradable</p>
           </div>
-          <div ref={compostBinRef} className={`flex flex-col items-center text-white p-2 rounded-2xl transition-transform duration-200 ${lastSuccessBin === 'compost' ? 'animate-bounce' : ''}`}>
-            <div className="text-6xl drop-shadow-lg">🌱</div>
-            <p className="font-bold">Compost</p>
+          <div ref={bioBinRef} className={`flex flex-col items-center text-white p-2 rounded-2xl transition-transform duration-200 ${lastSuccessBin === 'bio' ? 'animate-bounce' : ''}`}>
+            <div className="text-6xl drop-shadow-lg">🌿</div>
+            <p className="font-bold text-sm">Biodegradable</p>
           </div>
         </footer>
         <button onClick={() => setView('kid-home')} className="absolute top-2 left-2 text-white/80 hover:underline z-20 bg-black/20 rounded-full px-3 py-1 font-bold">
