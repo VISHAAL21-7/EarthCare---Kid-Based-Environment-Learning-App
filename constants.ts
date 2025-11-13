@@ -1,7 +1,7 @@
 
 import { AppState } from './types';
 
-export const GOOGLE_FORM_URL = "https://forms.gle/YOUR_FORM_ID"; // Replace with your actual Google Form URL
+export const GOOGLE_FORM_URL = "https://forms.gle/rk371eZD24Usr3nK8";
 export const DEV_PASSCODE = "EARTHADMIN2025";
 
 export const INITIAL_STATE: AppState = {

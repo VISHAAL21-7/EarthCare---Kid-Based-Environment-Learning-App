@@ -28,11 +28,28 @@ function App() {
         }));
       }
     } else if (result === 'no') {
-      const newMisses = appState.consecutiveMisses + 1;
-      let newEarthState: EarthState = appState.earthState;
-      if (newMisses === 1) newEarthState = 'Damaged';
-      if (newMisses >= 2) newEarthState = 'Critical';
-      setAppState(prev => ({ ...prev, consecutiveMisses: newMisses, earthState: newEarthState }));
+      setAppState(prev => {
+        const newMisses = prev.consecutiveMisses + 1;
+        let newEarthState: EarthState = prev.earthState;
+        let alertMessage = "";
+
+        if (newMisses === 1) {
+          alertMessage = "You've skipped one day. Be careful! If you skip again, the Earth will get damaged.";
+        } else if (newMisses === 2) {
+          newEarthState = 'Damaged';
+          alertMessage = "Oh no! After skipping two days, the Earth is now damaged.";
+        } else { // newMisses >= 3
+          newEarthState = 'Critical';
+          if (prev.earthState !== 'Critical') {
+            alertMessage = "Oh no! The Earth is now in critical condition! Please repair it soon.";
+          } else {
+            alertMessage = "You skipped again! The Earth is still in critical condition. It needs your help!";
+          }
+        }
+        
+        alert(alertMessage);
+        return { ...prev, consecutiveMisses: newMisses, earthState: newEarthState };
+      });
     }
     setView('kid-home');
   };

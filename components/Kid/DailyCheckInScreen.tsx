@@ -10,12 +10,6 @@ interface DailyCheckInScreenProps {
 }
 
 const DailyCheckInScreen: React.FC<DailyCheckInScreenProps> = ({ state, onCheckIn, setView }) => {
-  const handleNoClick = () => {
-    if (window.confirm("Are you sure? Earth will be sad if you skip a day!")) {
-      onCheckIn('no');
-    }
-  };
-
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <Card variant="check-in">
@@ -31,7 +25,7 @@ const DailyCheckInScreen: React.FC<DailyCheckInScreenProps> = ({ state, onCheckI
           >
             Use Shield ({state.shieldsRemaining})
           </Button>
-          <Button layout="icon-left" icon="😟" variant="danger" onClick={handleNoClick}>Skip Day</Button>
+          <Button layout="icon-left" icon="😟" variant="danger" onClick={() => onCheckIn('no')}>Skip Day</Button>
         </div>
         <button onClick={() => setView('kid-home')} className="mt-6 text-white/70 hover:underline">
             ← Go Back

@@ -11,6 +11,11 @@ interface KidHomeScreenProps {
 
 const KidHomeScreen: React.FC<KidHomeScreenProps> = ({ state, setView }) => {
   const isRepairEnabled = state.earthState === 'Damaged' || state.earthState === 'Critical';
+  const earthStatusText = {
+    Healthy: "Earth is healthy and happy!",
+    Damaged: "Earth is a little damaged.",
+    Critical: "Earth is in critical condition!"
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
@@ -30,16 +35,34 @@ const KidHomeScreen: React.FC<KidHomeScreenProps> = ({ state, setView }) => {
             <h2 className="text-4xl font-black drop-shadow-lg">Your Planet Today</h2>
         </div>
 
-        <div className="flex-grow flex items-center justify-center">
-             <EarthVisual state={state.earthState} />
+        <div className="flex-grow flex items-center justify-center relative">
+          <EarthVisual state={state.earthState} />
+          {isRepairEnabled && (
+              <button 
+                  onClick={() => setView('kid-repair')}
+                  className="absolute inset-0 w-full h-full cursor-pointer group rounded-full"
+                  aria-label="Repair Earth"
+              >
+                  <div className="absolute inset-0 bg-black/40 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="text-6xl transform transition-transform duration-300 group-hover:scale-110">🔧</span>
+                      <span className="text-white font-black text-2xl drop-shadow-lg mt-2">Click to Repair!</span>
+                  </div>
+                  {/* Pulsing indicator when not hovering */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl animate-pulse group-hover:opacity-0">
+                      🔧
+                  </div>
+              </button>
+          )}
         </div>
        
-        <div className="grid grid-cols-3 gap-3 pt-2">
+         <div className="text-center mb-4">
+            <p className="font-bold text-lg">{earthStatusText[state.earthState]}</p>
+            {!isRepairEnabled && <p className="text-sm text-white/80">Keep up the great work!</p>}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 pt-2">
             <Button layout="icon-top" variant="home-yellow" icon="✅" onClick={() => setView('kid-check-in')}>
                 Daily Check-In
-            </Button>
-            <Button layout="icon-top" variant="home-green" icon="🔧" onClick={() => setView('kid-repair')} disabled={!isRepairEnabled}>
-                Repair Earth
             </Button>
             <Button layout="icon-top" variant="home-blue" icon="📸" onClick={() => setView('kid-upload')}>
                 Eco Photo
