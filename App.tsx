@@ -9,6 +9,7 @@ import RepairMiniGameScreen from './components/Kid/RepairMiniGameScreen';
 import UploadPhotoScreen from './components/Kid/UploadPhotoScreen';
 import DevUnlockScreen from './components/Dev/DevUnlockScreen';
 import DevAdminDashboard from './components/Dev/DevAdminDashboard';
+import BadgeAwardedScreen from './components/Kid/BadgeAwardedScreen';
 
 function App() {
   const [appState, setAppState] = useLocalStorageState<AppState>('earthcareState', INITIAL_STATE);
@@ -74,7 +75,7 @@ function App() {
     setAppState(prev => {
         const newPhotoCount = prev.approvedPhotos + 1;
         if (newPhotoCount >= 5) {
-            alert("🏆 Badge awarded! You're an Eco Hero!");
+            setView('kid-badge-awarded');
             return {
                 ...prev,
                 approvedPhotos: 0,
@@ -120,6 +121,8 @@ function App() {
         return <RepairMiniGameScreen onRepairComplete={handleRepairComplete} setView={setView} />;
       case 'kid-upload':
         return <UploadPhotoScreen state={appState} setView={setView} />;
+      case 'kid-badge-awarded':
+        return <BadgeAwardedScreen badgeCount={appState.badgeCount} setView={setView} />;
       case 'dev-unlock':
         return <DevUnlockScreen onUnlock={handleUnlockDev} setView={setView} />;
       case 'dev-dashboard':

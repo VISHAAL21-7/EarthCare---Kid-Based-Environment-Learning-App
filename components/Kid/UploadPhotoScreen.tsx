@@ -29,9 +29,17 @@ const UploadPhotoScreen: React.FC<UploadPhotoScreenProps> = ({ state, setView })
           Upload Photo
         </Button>
 
-        <p className="mt-6 font-semibold bg-white/50 rounded-full px-4 py-2">
-          Progress: {'⭐'.repeat(state.approvedPhotos)}{'✩'.repeat(5 - state.approvedPhotos)} ({state.approvedPhotos}/5)
-        </p>
+        <div className="mt-6 font-semibold bg-white/50 rounded-full px-4 py-2">
+          <p className="font-bold mb-2">Progress:</p>
+          <div className="flex justify-center items-center space-x-2">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span key={i} className={`text-4xl transition-all duration-300 ${i < state.approvedPhotos ? 'transform scale-110 text-yellow-400 drop-shadow-lg' : 'opacity-50 text-gray-600'}`}>
+                ⭐
+              </span>
+            ))}
+          </div>
+           <p className="text-sm mt-1">({state.approvedPhotos}/5 photos approved)</p>
+        </div>
         
         <p className="mt-2 font-bold">Total Badges: {state.badgeCount} 🏆</p>
 

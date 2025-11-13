@@ -14,7 +14,7 @@
         theme: {
           extend: {
             colors: {
-              'ui-bg': '#FDF6E3',
+              'ui-bg': '#FDF6E3', // Kept for reference, but body style is overridden
               'text-dark': '#3D352E',
               'eco-green': '#34A853',
               'eco-green-dark': '#2C8C42',
@@ -41,13 +41,22 @@
             animation: {
               'spin-slow': 'spin 12s linear infinite',
               'float': 'float 3s ease-in-out infinite',
+              'gentle-float': 'gentle-float 6s ease-in-out infinite',
               'swoop': 'swoop 15s ease-in-out infinite',
               'rotate-earth': 'rotate-earth 30s linear infinite',
+              'rotate-clouds': 'rotate-earth 50s linear infinite', // Slower cloud rotation
+              'peek-a-boo': 'peek-a-boo 8s ease-in-out infinite',
+              'swim-around': 'swim-around 18s linear infinite',
+              'confetti-fall': 'confetti-fall 3s linear infinite',
             },
             keyframes: {
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-10px)' },
+              },
+              'gentle-float': {
+                '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                '50%': { transform: 'translateY(-20px) rotate(3deg)' },
               },
               swoop: {
                 '0%': { transform: 'translate(120%, 20px) rotate(0deg)' },
@@ -57,7 +66,22 @@
               'rotate-earth': {
                 'from': { backgroundPosition: '0% center' },
                 'to': { backgroundPosition: '200% center' },
-              }
+              },
+              'peek-a-boo': {
+                '0%, 40%, 100%': { transform: 'translateX(100%)' },
+                '50%, 90%': { transform: 'translateX(10%)' },
+              },
+              'swim-around': {
+                '0%': { transform: 'translateX(-30%) rotateY(0deg) ' },
+                '48%': { transform: 'translateX(110%) rotateY(0deg)' },
+                '50%': { transform: 'translateX(110%) rotateY(180deg)' },
+                '98%': { transform: 'translateX(-30%) rotateY(180deg)' },
+                '100%': { transform: 'translateX(-30%) rotateY(0deg)' },
+              },
+              'confetti-fall': {
+                '0%': { transform: 'translateY(-10vh) rotate(0deg)' },
+                '100%': { transform: 'translateY(110vh) rotate(360deg)' },
+              },
             }
           }
         }
@@ -73,7 +97,7 @@
 }
 </script>
 </head>
-  <body class="bg-ui-bg font-sans text-text-dark">
+  <body class="bg-gradient-to-b from-sky-blue/30 to-eco-green/20 font-sans text-text-dark">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

@@ -32,7 +32,11 @@ const KidHomeScreen: React.FC<KidHomeScreenProps> = ({ state, setView }) => {
 
         <div className="text-center">
             <h1 className="text-2xl font-bold">EarthCare</h1>
-            <h2 className="text-4xl font-black drop-shadow-lg">Your Planet Today</h2>
+            <h2 className="text-4xl font-black drop-shadow-lg">
+                <span className="bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-200">
+                    Your Planet Today
+                </span>
+            </h2>
         </div>
 
         <div className="flex-grow flex items-center justify-center relative">

@@ -13,7 +13,9 @@ const DailyCheckInScreen: React.FC<DailyCheckInScreenProps> = ({ state, onCheckI
   return (
     <div className="flex items-center justify-center min-h-screen p-4">
       <Card variant="check-in">
-        <h2 className="text-3xl font-bold mb-6">Did you maintain your eco habit today?</h2>
+        <div className="text-8xl mb-4 animate-float">🌍</div>
+        <h2 className="text-3xl font-bold mb-2">Hi, {state.kidName}!</h2>
+        <p className="text-white/90 mb-6 text-lg">How did your eco-habit go today?</p>
         <div className="space-y-4">
           <Button layout="icon-left" icon="☀️" variant="warning" onClick={() => onCheckIn('yes')}>YES</Button>
           <Button 

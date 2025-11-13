@@ -6,16 +6,17 @@ interface EarthVisualProps {
 }
 
 const EARTH_TEXTURE_URL = 'https://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x5400x2700.jpg';
+const CLOUD_TEXTURE_URL = 'https://static.vecteezy.com/system/resources/previews/022/227/534/original/fluffy-white-clouds-drifting-across-a-blue-sky-with-transparent-background-png.png';
 
 const earthConfig = {
   Healthy: {
     filter: 'grayscale(0) brightness(1) saturate(1.2)',
     animation: 'animate-rotate-earth',
     decorations: <>
-        <span className="absolute top-[15%] left-[10%] text-2xl animate-ping opacity-75">✨</span>
+        <div className="absolute top-1/2 left-0 w-24 text-6xl z-20 animate-peek-a-boo">🐅</div>
+        <div className="absolute -top-4 right-[10%] w-24 text-5xl z-20 animate-gentle-float">🐼</div>
+        <div className="absolute bottom-4 left-0 w-full text-5xl z-0 animate-swim-around opacity-80">🐋</div>
         <span className="absolute top-[20%] left-[15%] text-2xl animate-pulse">⭐</span>
-        <div className="absolute top-[30%] -right-4 text-3xl text-yellow-300 animate-swoop">🐤</div>
-        <div className="absolute top-[40%] -right-4 text-2xl text-blue-400 animate-swoop [animation-delay:-7s]">🐦</div>
     </>,
   },
   Damaged: {
@@ -61,6 +62,15 @@ const EarthVisual: React.FC<EarthVisualProps> = ({ state }) => {
         >
         </div>
         
+        {/* Cloud Layer */}
+        <div
+          className="absolute inset-[-10px] rounded-full animate-rotate-clouds opacity-50"
+          style={{
+            backgroundImage: `url(${CLOUD_TEXTURE_URL})`,
+            backgroundSize: '200% 100%',
+          }}
+        ></div>
+
         {/* Lighting and Atmosphere Effects */}
         <div 
           className="absolute inset-0 rounded-full"

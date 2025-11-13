@@ -17,5 +17,6 @@ export type View =
   | 'kid-check-in'
   | 'kid-repair'
   | 'kid-upload'
+  | 'kid-badge-awarded'
   | 'dev-unlock'
   | 'dev-dashboard';
