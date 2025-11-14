@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View } from '../../types';
+import playSound from '../../utils/audio';
 
 const EarthMascot = ({ progress }: { progress: number }) => {
   let emoji = '😢';
@@ -117,6 +118,7 @@ const RepairMiniGameScreen: React.FC<{
 
   useEffect(() => {
     if (cleanedCount >= TOTAL_ITEMS_TO_CLEAN) {
+      playSound('win');
       setTimeout(() => {
         alert("Great job! Earth is feeling better thanks to you!");
         onRepairComplete();
@@ -125,6 +127,7 @@ const RepairMiniGameScreen: React.FC<{
   }, [cleanedCount, onRepairComplete]);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>, itemToDrag: TrashItem) => {
+    playSound('pickup');
     e.currentTarget.setPointerCapture(e.pointerId);
     setItems(prev => prev.filter(item => item.id !== itemToDrag.id));
     setDraggedItem(itemToDrag);
@@ -143,6 +146,9 @@ const RepairMiniGameScreen: React.FC<{
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!draggedItem) return;
 
+    let wasDropAttempted = false;
+    let droppedCorrectly = false;
+
     const isOverlapping = (elementRef: React.RefObject<HTMLDivElement>): boolean => {
       if (!elementRef.current) return false;
       const rect = elementRef.current.getBoundingClientRect();
@@ -152,13 +158,14 @@ const RepairMiniGameScreen: React.FC<{
       );
     };
 
-    let droppedCorrectly = false;
     if (isOverlapping(nonBioBinRef)) {
+      wasDropAttempted = true;
       if (draggedItem.type === 'non-biodegradable') {
         droppedCorrectly = true;
         setLastSuccessBin('non-bio');
       }
     } else if (isOverlapping(bioBinRef)) {
+      wasDropAttempted = true;
       if (draggedItem.type === 'biodegradable') {
         droppedCorrectly = true;
         setLastSuccessBin('bio');
@@ -166,9 +173,13 @@ const RepairMiniGameScreen: React.FC<{
     }
 
     if (droppedCorrectly) {
+      playSound('success');
       setCleanedCount(c => c + 1);
       setTimeout(() => setLastSuccessBin(null), 400);
     } else {
+      if (wasDropAttempted) {
+        playSound('error');
+      }
       setItems(prev => [...prev, draggedItem]);
     }
     setDraggedItem(null);

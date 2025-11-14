@@ -35,6 +35,7 @@ export interface TapTarget {
   emoji: string;
   x: number; // percentage left
   y: number; // percentage top
+  isCorrect?: boolean;
 }
 
 export interface DragItem {
@@ -57,7 +58,9 @@ export interface SortDragItem extends DragItem {
   correctZoneId: number;
 }
 
-export interface SortDropZone extends DropZone {}
+export interface SortDropZone extends DropZone {
+  name: string;
+}
 
 export interface SortInteractionData {
   items: SortDragItem[];

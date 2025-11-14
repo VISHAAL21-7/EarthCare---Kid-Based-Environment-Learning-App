@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Story, TapTarget, DragItem, SortDragItem, CatchAndSortItem } from '../../types';
 import Button from '../UI/Button';
 import Card from '../UI/Card';
+import playSound from '../../utils/audio';
 
 type FallingItem = CatchAndSortItem & { id: number; x: number; y: number; };
 
@@ -17,6 +18,7 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
   const [showConfetti, setShowConfetti] = useState(false);
   const [interactionState, setInteractionState] = useState<any>({});
   const [isInteractionComplete, setIsInteractionComplete] = useState(false);
+  const [incorrectTap, setIncorrectTap] = useState<number | null>(null);
   
   const [draggedItem, setDraggedItem] = useState<{item: DragItem, offset: {x: number, y: number}} | null>(null);
   const [sortableItems, setSortableItems] = useState<(SortDragItem & {x: number, y: number, isReturning?: boolean})[]>([]);
@@ -44,6 +46,7 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
   useEffect(() => {
     cleanupGame();
     setFeedback(null);
+    setIncorrectTap(null);
     const interaction = currentPage.interaction;
     setIsInteractionComplete(!interaction);
 
@@ -97,8 +100,10 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
   
   const handleNext = () => {
     if (pageIndex < story.pages.length - 1) {
+        playSound('pageTurn');
         setPageIndex(pageIndex + 1);
     } else {
+        playSound('win');
         setShowConfetti(true);
         setTimeout(() => {
             onStoryComplete();
@@ -114,13 +119,28 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
     }, 2500); 
   };
 
-  const handleTapTarget = (targetId: number) => {
-    if (interactionState.tapped?.includes(targetId)) return;
-    const newTapped = [...interactionState.tapped, targetId];
-    setInteractionState({ tapped: newTapped });
-    const totalTargets = currentPage.interaction?.data.targets?.length || 0;
-    if (newTapped.length >= totalTargets) {
-      setTimeout(() => setIsInteractionComplete(true), 500);
+  const handleTapTarget = (target: TapTarget) => {
+    const isFindOneGame = currentPage.interaction?.data.targets?.some(t => t.isCorrect);
+
+    if (isFindOneGame) {
+        if (target.isCorrect) {
+            playSound('success');
+            setInteractionState({ tapped: currentPage.interaction?.data.targets?.map(t => t.id) || [] });
+            setTimeout(() => setIsInteractionComplete(true), 500);
+        } else {
+            playSound('error');
+            setIncorrectTap(target.id);
+            setTimeout(() => setIncorrectTap(null), 800);
+        }
+    } else {
+        if (interactionState.tapped?.includes(target.id)) return;
+        playSound('success', 0.3);
+        const newTapped = [...interactionState.tapped, target.id];
+        setInteractionState({ tapped: newTapped });
+        const totalTargets = currentPage.interaction?.data.targets?.length || 0;
+        if (newTapped.length >= totalTargets) {
+            setTimeout(() => setIsInteractionComplete(true), 500);
+        }
     }
   };
   
@@ -152,6 +172,7 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
       const itemCenterX = item.x + 5;
       const itemCenterY = item.y + 5;
       if (itemCenterX > dropZone.x && itemCenterX < dropZone.x + dropZone.width && itemCenterY > dropZone.y && itemCenterY < dropZone.y + dropZone.height) {
+        playSound('success');
         setIsInteractionComplete(true);
         setInteractionState({});
       }
@@ -163,11 +184,15 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
       if (!dragged) return;
       const zones = currentPage.interaction?.data.sortables?.zones || [];
       let droppedCorrectly = false;
+      let wasDropAttempted = false;
+
       for (const zone of zones) {
         const itemCenterX = dragged.x + 5;
         const itemCenterY = dragged.y + 5;
         if (itemCenterX > zone.x && itemCenterX < zone.x + zone.width && itemCenterY > zone.y && itemCenterY < zone.y + zone.height) {
+          wasDropAttempted = true;
           if (dragged.correctZoneId === zone.id) {
+            playSound('success');
             droppedCorrectly = true;
             const newItems = sortableItems.filter(i => i.id !== dragged.id);
             setSortableItems(newItems);
@@ -179,6 +204,7 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
         }
       }
       if (!droppedCorrectly) {
+        if (wasDropAttempted) playSound('error');
         setSortableItems(prev => prev.map(it => it.id === dragged.id ? { ...it, x: it.startX, y: it.startY, isReturning: true } : it));
         setTimeout(() => setSortableItems(prev => prev.map(it => it.id === dragged.id ? {...it, isReturning: false} : it)), 500);
       }
@@ -193,6 +219,7 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
         const itemCenterY = draggedFallingItem.item.y + 5;
         if (itemCenterX > zone.x && itemCenterX < zone.x + zone.width && itemCenterY > zone.y && itemCenterY < zone.y + zone.height) {
             if (draggedFallingItem.item.correctZoneId === zone.id) {
+                playSound('success');
                 droppedCorrectly = true;
                 const newCaughtCount = caughtCount + 1;
                 setCaughtCount(newCaughtCount);
@@ -205,6 +232,7 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
                   setIsInteractionComplete(true);
                 }
             } else {
+                playSound('error');
                 setZoneFeedback(prev => ({...prev, [zone.id]: 'failure'}));
                 setTimeout(() => setZoneFeedback(prev => ({...prev, [zone.id]: null})), 300);
             }
@@ -216,6 +244,7 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
   };
 
   const handleFallingItemPointerDown = (e: React.PointerEvent<HTMLDivElement>, item: FallingItem) => {
+    playSound('pickup');
     e.currentTarget.setPointerCapture(e.pointerId);
     const rect = e.currentTarget.getBoundingClientRect();
     const parentRect = interactionAreaRef.current!.getBoundingClientRect();
@@ -224,6 +253,7 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
   };
   
   const handleSortablePointerDown = (e: React.PointerEvent<HTMLDivElement>, item: SortDragItem) => {
+    playSound('pickup');
     e.currentTarget.setPointerCapture(e.pointerId);
     const rect = e.currentTarget.getBoundingClientRect();
     setDraggedSortable({ item, offset: { x: e.clientX - rect.left, y: e.clientY - rect.top } });
@@ -260,7 +290,7 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
             {/* --- INTERACTION LAYER --- */}
             {currentPage.interaction?.type === 'tap-collect' && currentPage.interaction.data.targets?.map(target =>
                 !interactionState.tapped?.includes(target.id) && (
-                    <div key={target.id} className="absolute text-5xl cursor-pointer transition-transform hover:scale-125" style={{ left: `${target.x}%`, top: `${target.y}%` }} onClick={() => handleTapTarget(target.id)}>
+                    <div key={target.id} className={`absolute text-5xl cursor-pointer transition-transform hover:scale-125 ${incorrectTap === target.id ? 'animate-wobble' : ''}`} style={{ left: `${target.x}%`, top: `${target.y}%` }} onClick={() => handleTapTarget(target)}>
                         {target.emoji}
                     </div>
                 )
@@ -268,7 +298,10 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
              {currentPage.interaction?.type === 'drag-drop' && interactionState.item && (
                  <>
                     <div
-                        onPointerDown={(e) => setDraggedItem({item: interactionState.item, offset: {x:e.nativeEvent.offsetX, y:e.nativeEvent.offsetY}})}
+                        onPointerDown={(e) => {
+                           playSound('pickup');
+                           setDraggedItem({item: interactionState.item, offset: {x:e.nativeEvent.offsetX, y:e.nativeEvent.offsetY}});
+                        }}
                         className="absolute text-6xl cursor-grab active:cursor-grabbing"
                         style={{ left: `${interactionState.item.x}%`, top: `${interactionState.item.y}%`, transform: draggedItem ? 'scale(1.2)' : 'scale(1)', transition: 'transform 0.1s' }}
                     >
@@ -282,8 +315,9 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
              {currentPage.interaction?.type === 'sort' && (
                 <>
                   {currentPage.interaction.data.sortables?.zones.map(zone => (
-                    <div key={zone.id} className="absolute flex items-center justify-center text-6xl bg-black/10 rounded-2xl border-2 border-dashed border-black/20" style={{ left: `${zone.x}%`, top: `${zone.y}%`, width: `${zone.width}%`, height: `${zone.height}%` }}>
+                    <div key={zone.id} className="absolute flex flex-col items-center justify-center text-5xl bg-black/10 rounded-2xl border-2 border-dashed border-black/20 p-2" style={{ left: `${zone.x}%`, top: `${zone.y}%`, width: `${zone.width}%`, height: `${zone.height}%` }}>
                       {zone.emoji}
+                      <p className="text-xs font-bold mt-1">{zone.name}</p>
                     </div>
                   ))}
                   {sortableItems.map(item => (

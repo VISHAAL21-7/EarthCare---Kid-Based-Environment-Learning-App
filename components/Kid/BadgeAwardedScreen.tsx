@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View } from '../../types';
 import Button from '../UI/Button';
 import Card from '../UI/Card';
 import { BADGE_TITLES } from '../../constants';
+import playSound from '../../utils/audio';
 
 interface BadgeAwardedScreenProps {
   badgeCount: number;
@@ -24,6 +25,10 @@ const ConfettiPiece: React.FC<{ initialX: number, delay: number, color: string }
 };
 
 const BadgeAwardedScreen: React.FC<BadgeAwardedScreenProps> = ({ badgeCount, setView }) => {
+  useEffect(() => {
+    playSound('badge', 0.6);
+  }, []);
+
   const confettiColors = ['#FBBC05', '#EA4335', '#34A853', '#4285F4'];
   const confettiPieces = Array.from({ length: 20 }).map((_, i) => ({
     x: Math.random() * 100,

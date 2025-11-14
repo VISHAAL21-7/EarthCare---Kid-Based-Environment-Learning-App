@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import playSound from '../../utils/audio';
 
 // --- CONFIGURATION ---
 const TOTAL_ITEMS_TO_SAVE = 12;
@@ -167,6 +168,7 @@ const SaveTheSaplingsGame: React.FC<{ onGameComplete: () => void }> = ({ onGameC
   
   useEffect(() => {
     if (savedCount >= TOTAL_ITEMS_TO_SAVE && !isComplete) {
+      playSound('win');
       setIsComplete(true);
       if (spawnIntervalRef.current !== null) clearInterval(spawnIntervalRef.current);
       setTimeout(() => onGameComplete(), 3000);
@@ -188,6 +190,7 @@ const SaveTheSaplingsGame: React.FC<{ onGameComplete: () => void }> = ({ onGameC
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>, item: GameItem) => {
     if ('isGolden' in item || ALL_SAPLING_TYPES.includes((item as Sapling).type)) {
       const sapling = item as Sapling;
+      playSound('pickup');
       e.currentTarget.setPointerCapture(e.pointerId);
       const rect = e.currentTarget.getBoundingClientRect();
       setDraggedSapling({ sapling, offset: { x: e.clientX - rect.left, y: e.clientY - rect.top } });
@@ -195,6 +198,7 @@ const SaveTheSaplingsGame: React.FC<{ onGameComplete: () => void }> = ({ onGameC
     } else {
         const powerUp = item as PowerUp;
         if (powerUp.type === 'wateringCan') {
+            playSound('powerup');
             triggerPopup(powerUp.x, powerUp.y, "Yay! You Saved The Water!");
             setIsSlowed(true);
             setTimeout(() => setIsSlowed(false), 4000);
@@ -234,6 +238,7 @@ const SaveTheSaplingsGame: React.FC<{ onGameComplete: () => void }> = ({ onGameC
 
     const correctZone = SAPLING_TO_ZONE[draggedSapling.sapling.type];
     if (droppedInZone && (correctZone === droppedInZone || (draggedSapling.sapling.isGolden && droppedInZone !== 'compost'))) {
+      playSound('success');
       const points = draggedSapling.sapling.isGolden ? 2 : 1;
       const newCombo = combo + 1;
       const bonus = newCombo > 0 && newCombo % 3 === 0 ? 1 : 0;
@@ -243,7 +248,10 @@ const SaveTheSaplingsGame: React.FC<{ onGameComplete: () => void }> = ({ onGameC
       triggerFeedback(droppedInZone, 'success');
       triggerEffect(zoneCenter.x - gameAreaRef.current!.getBoundingClientRect().left, zoneCenter.y - gameAreaRef.current!.getBoundingClientRect().top, draggedSapling.sapling.isGolden ? '✨' : '🍃');
     } else {
-      if (droppedInZone) triggerFeedback(droppedInZone, 'failure');
+      if (droppedInZone) {
+        playSound('error');
+        triggerFeedback(droppedInZone, 'failure');
+      }
       setCombo(0);
       const returnedSapling = { ...draggedSapling.sapling, isWobbling: true, y: 10 };
       setItems(prev => [...prev, returnedSapling]);

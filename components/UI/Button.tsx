@@ -1,4 +1,5 @@
 import React from 'react';
+import playSound from '../../utils/audio';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -6,9 +7,10 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   layout?: 'default' | 'icon-left' | 'icon-top';
   icon?: React.ReactNode;
   className?: string;
+  disableSound?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', layout = 'default', icon, className = '', ...props }) => {
+const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', layout = 'default', icon, className = '', disableSound = false, onClick, ...props }) => {
   const baseClasses = 'w-full rounded-2xl font-bold text-lg transition-all duration-150 ease-in-out transform active:translate-y-px disabled:opacity-60 disabled:cursor-not-allowed shadow-cute focus:outline-none focus:ring-4 disabled:bg-slate-400 disabled:shadow-none';
   
   const variantClasses = {
@@ -28,8 +30,17 @@ const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', layout =
     'icon-top': 'h-28 px-2 py-4 flex flex-col items-center justify-center space-y-2 text-base'
   }
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!disableSound && !props.disabled) {
+      playSound('click');
+    }
+    if (onClick) {
+      onClick(e);
+    }
+  };
+
   return (
-    <button className={`${baseClasses} ${variantClasses[variant]} ${layoutClasses[layout]} ${className}`} {...props}>
+    <button className={`${baseClasses} ${variantClasses[variant]} ${layoutClasses[layout]} ${className}`} onClick={handleClick} {...props}>
       {layout === 'icon-left' && <span className="text-3xl">{icon}</span>}
       {layout === 'icon-top' && <span className="text-4xl h-10">{icon}</span>}
       <span>{children}</span>

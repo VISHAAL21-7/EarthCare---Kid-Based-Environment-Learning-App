@@ -69,13 +69,21 @@ export const stories: Story[] = [
     pages: [
         { image: "🐞", text: "A tiny ladybug named Lucy woke up on a big green leaf, far from her family. 'Oh dear, I'm lost!' she whispered, her voice trembling." },
         { image: "🐦", text: "Pip the sparrow was practicing his loop-de-loops when he saw the sad little ladybug. He flew down. 'What's wrong, little friend?'" },
-        { image: "❓", text: "'I can't find my family!' cried Lucy. 'They live by the red flowers, but I see so many kinds of flowers!'",
-            choice: {
-                prompt: "How can Pip best help Lucy?",
-                options: [
-                    { text: "Fly high to get a better view", response: "Pip soared high! 'I'll be your eyes in the sky!' he sang. From up there, he could see the whole garden." },
-                    { text: "Tell her to keep looking", response: "Pip felt a bit shy. 'Good luck!' he chirped, but then he thought, 'A true friend would do more to help.'" }
-                ]
+        {
+            image: "👀",
+            text: "Pip soared into the air to get a bird's-eye view of the garden below. It was a sea of colors! Can you help him spot Lucy's family?",
+            interaction: {
+                type: 'tap-collect',
+                prompt: 'Find the patch of red roses!',
+                data: {
+                    targets: [
+                        { id: 1, emoji: '🌹', x: 65, y: 70, isCorrect: true },
+                        { id: 2, emoji: '🌻', x: 20, y: 55 },
+                        { id: 3, emoji: '🌷', x: 70, y: 20 },
+                        { id: 4, emoji: '🌸', x: 15, y: 25 },
+                        { id: 5, emoji: '🌼', x: 40, y: 45 },
+                    ]
+                }
             }
         },
         { image: "🌹", text: "From the sky, Pip spotted a big, beautiful patch of red roses! He swooped down and guided Lucy all the way there." },
@@ -103,9 +111,9 @@ export const stories: Story[] = [
                             { id: 3, emoji: '📰', correctZoneId: 3, startX: 70, startY: 20 },
                         ],
                         zones: [
-                            { id: 1, emoji: '♻️', x: 5, y: 70, width: 25, height: 25 },
-                            { id: 2, emoji: '🌿', x: 37, y: 70, width: 25, height: 25 },
-                            { id: 3, emoji: '📄', x: 70, y: 70, width: 25, height: 25 },
+                            { id: 1, name: "Recycle", emoji: '♻️', x: 5, y: 70, width: 25, height: 25 },
+                            { id: 2, name: "Compost", emoji: '🌿', x: 37, y: 70, width: 25, height: 25 },
+                            { id: 3, name: "Paper", emoji: '📄', x: 70, y: 70, width: 25, height: 25 },
                         ]
                     }
                 }
@@ -197,13 +205,26 @@ export const stories: Story[] = [
     pages: [
         { image: "🗺️", text: "Leo visited a special place called Sunny Meadow Village. Instead of cars, people rode bikes, and old boots were used as flowerpots!" },
         { image: "🥕", text: "They grew food in a shared garden and traded old toys instead of buying new ones. 'We believe in using things wisely,' a villager explained." },
-        { image: "🤔", text: "Leo was amazed. Everything had a purpose, and everyone worked together. He wondered what made the village run so well.",
-            choice: {
-                prompt: "What is the village's biggest secret?",
-                options: [
-                    { text: "They use power from the sun and wind", response: "That's right! They use solar panels and windmills, which turn sunlight and breezes into clean energy!" },
-                    { text: "They have a magical treasure", response: "Their treasure isn't gold, but a magical idea: working together to care for their home." }
-                ]
+        {
+            image: "♻️",
+            text: "A villager smiled. 'Our secret is that everything has a special place!' Can you help Leo sort these items the Sunny Meadow way?",
+            interaction: {
+                type: 'sort',
+                prompt: 'Drag the items to the right bins!',
+                data: {
+                    sortables: {
+                        items: [
+                            { id: 1, emoji: '☀️', correctZoneId: 1, startX: 20, startY: 20 },
+                            { id: 2, emoji: '🥕', correctZoneId: 2, startX: 45, startY: 25 },
+                            { id: 3, emoji: '👢', correctZoneId: 3, startX: 70, startY: 20 },
+                        ],
+                        zones: [
+                            { id: 1, name: 'Energy', emoji: '⚡', x: 5, y: 70, width: 25, height: 25 },
+                            { id: 2, name: 'Garden', emoji: '🌱', x: 37, y: 70, width: 25, height: 25 },
+                            { id: 3, name: 'Reuse', emoji: '🎨', x: 70, y: 70, width: 25, height: 25 },
+                        ]
+                    }
+                }
             }
         },
         { image: "♻️", text: "Leo saw a clever water wheel powering lights and a market where kids traded toys. 'Our secret is helping each other and the Earth,' they said." },

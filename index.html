@@ -42,7 +42,7 @@
               'spin-slow': 'spin 12s linear infinite',
               'float': 'float 3s ease-in-out infinite',
               'gentle-float': 'gentle-float 6s ease-in-out infinite',
-              'swoop': 'swoop 15s ease-in-out infinite',
+              'drift': 'drift linear infinite',
               'rotate-earth': 'rotate-earth 30s linear infinite',
               'rotate-clouds': 'rotate-earth 50s linear infinite',
               'confetti-fall': 'confetti-fall 3s linear infinite',
@@ -51,9 +51,16 @@
               'burst-fade': 'burst-fade 0.5s ease-out forwards',
               'popup-fade': 'popup-fade 1.5s ease-out forwards',
               'flutter': 'flutter 0.4s ease-in-out',
-              'walk-across': 'walk-across 20s linear infinite',
-              'swim-jump': 'swim-jump 15s ease-in-out infinite',
+              'walk-around': 'walk-around 15s linear infinite',
               'rain-fall': 'rain-fall 1s ease-in forwards',
+              'whale-jump': 'whale-jump 0.8s ease-in-out',
+              'swim-around-position': 'swim-around-position 20s linear infinite',
+              'swim-around-transform': 'swim-around-transform 20s linear infinite',
+              'splash-burst': 'splash-burst 0.5s ease-out forwards',
+              'subtle-sway': 'subtle-sway 4s ease-in-out infinite alternate',
+              'sparkle-pulse': 'sparkle-pulse 2s ease-in-out infinite',
+              'healing-flash': 'healing-flash 0.8s ease-out',
+              'damaging-flash': 'damaging-flash 0.8s ease-in-out',
             },
             keyframes: {
               float: {
@@ -64,10 +71,9 @@
                 '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
                 '50%': { transform: 'translateY(-20px) rotate(3deg)' },
               },
-              swoop: {
-                '0%': { transform: 'translate(120%, 20px) rotate(0deg)' },
-                '50%': { transform: 'translate(-20%, 70px) rotate(20deg)' },
-                '100%': { transform: 'translate(120%, 20px) rotate(0deg)' },
+              drift: {
+                'from': { transform: 'translateX(0)' },
+                'to': { transform: 'translateX(450px)' },
               },
               'rotate-earth': {
                 'from': { backgroundPosition: '0% center' },
@@ -103,25 +109,63 @@
                 '50%': { transform: 'scale(0.9) rotate(-15deg)' },
                 '75%': { transform: 'scale(1.1) rotate(10deg)' },
               },
-              'walk-across': {
-                '0%': { left: '-20%', transform: 'scaleX(1)' },
-                '48%': { left: '100%', transform: 'scaleX(1)' },
-                '52%': { left: '100%', transform: 'scaleX(-1)' },
-                '98%': { left: '-20%', transform: 'scaleX(-1)' },
-                '100%': { left: '-20%', transform: 'scaleX(1)' },
-              },
-              'swim-jump': {
-                '0%': { left: '-20%', transform: 'translateY(0) scaleX(1)' },
-                '25%': { transform: 'translateY(-60px) rotate(-15deg) scaleX(1)' },
-                '50%': { left: '100%', transform: 'translateY(0) scaleX(1)' },
-                '51%': { left: '100%', transform: 'translateY(0) scaleX(-1)' },
-                '75%': { transform: 'translateY(-60px) rotate(15deg) scaleX(-1)' },
-                '100%': { left: '-20%', transform: 'translateY(0) scaleX(-1)' },
+              'walk-around': {
+                '0%': { left: '-10%', top: '60%', zIndex: 10, transform: 'scale(0.8) scaleX(1)' },
+                '49%': { left: '100%', top: '60%', zIndex: 10, transform: 'scale(0.8) scaleX(1)' },
+                '50%': { left: '100%', top: '60%', zIndex: -1, transform: 'scale(0.7) scaleX(-1)' },
+                '99%': { left: '-10%', top: '60%', zIndex: -1, transform: 'scale(0.7) scaleX(-1)' },
+                '100%': { left: '-10%', top: '60%', zIndex: 10, transform: 'scale(0.8) scaleX(1)' },
               },
               'rain-fall': {
                 '0%': { transform: 'translateY(0)', opacity: 1 },
                 '100%': { transform: 'translateY(60px)', opacity: 0 },
-              }
+              },
+              'whale-jump': {
+                '0%, 100%': { transform: 'translateY(0) scale(1)' },
+                '50%': { transform: 'translateY(-80px) rotate(-25deg) scale(1.2)' },
+              },
+              'swim-around-position': {
+                  '0%':   { left: '-10%', top: '70%', zIndex: 10 },
+                  '25%':  { left: '45%',  top: '80%', zIndex: 10 },
+                  '49%':  { left: '100%', top: '70%', zIndex: 10 },
+                  '50%':  { left: '100%', top: '70%', zIndex: -1 },
+                  '75%':  { left: '45%',  top: '60%', zIndex: -1 },
+                  '99%': { left: '-10%', top: '70%', zIndex: -1 },
+                  '100%': { left: '-10%', top: '70%', zIndex: 10 }
+              },
+              'swim-around-transform': {
+                  '0%':   { transform: 'scale(0.9) rotate(-15deg) scaleX(1)' },
+                  '25%':  { transform: 'scale(1) rotate(0deg) scaleX(1)' },
+                  '49%':  { transform: 'scale(0.9) rotate(15deg) scaleX(1)' },
+                  '50%':  { transform: 'scale(0.7) rotate(-15deg) scaleX(-1)' },
+                  '75%':  { transform: 'scale(0.6) rotate(0deg) scaleX(-1)' },
+                  '99%': { transform: 'scale(0.7) rotate(15deg) scaleX(-1)' },
+                  '100%': { transform: 'scale(0.9) rotate(-15deg) scaleX(1)' }
+              },
+              'splash-burst': {
+                '0%': { transform: 'scale(0.5) translateY(0)', opacity: 1 },
+                '100%': { transform: 'scale(1.5) translateY(20px)', opacity: 0 },
+              },
+              'subtle-sway': {
+                'from': { transform: 'rotate(-3deg) translateX(-2px)' },
+                'to': { transform: 'rotate(3deg) translateX(2px)' },
+              },
+              'sparkle-pulse': {
+                '0%, 100%': { opacity: 0.5, transform: 'scale(0.8)' },
+                '50%': { opacity: 1, transform: 'scale(1.2)' },
+              },
+              'healing-flash': {
+                '0%': { transform: 'scale(1)', opacity: 0 },
+                '50%': { transform: 'scale(1.3)', opacity: 0.7 },
+                '100%': { transform: 'scale(1)', opacity: 0 },
+              },
+              'damaging-flash': {
+                '0%, 100%': { transform: 'translateX(0) rotate(0)', opacity: 0 },
+                '20%': { transform: 'translateX(-3px) rotate(-2deg)', opacity: 0.6 },
+                '40%': { transform: 'translateX(3px) rotate(2deg)', opacity: 0.6 },
+                '60%': { transform: 'translateX(-3px) rotate(-2deg)', opacity: 0.6 },
+                '80%': { transform: 'translateX(3px) rotate(2deg)', opacity: 0.6 },
+              },
             }
           }
         }
