@@ -35,6 +35,7 @@ const DevAdminDashboard: React.FC<DevAdminDashboardProps> = ({
             <li>Name: {state.kidName}</li>
             <li>Earth State: {state.earthState}</li>
             <li>Shields Left: {state.shieldsRemaining}/2</li>
+            <li>Streak: {state.streak}</li>
             <li>Approved Photos: {state.approvedPhotos}/5</li>
             <li>Badges Earned: {state.badgeCount}</li>
           </ul>

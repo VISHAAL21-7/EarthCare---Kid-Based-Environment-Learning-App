@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from '../../types';
 import Button from '../UI/Button';
 import Card from '../UI/Card';
+import { BADGE_TITLES } from '../../constants';
 
 interface BadgeAwardedScreenProps {
   badgeCount: number;
@@ -30,6 +31,8 @@ const BadgeAwardedScreen: React.FC<BadgeAwardedScreenProps> = ({ badgeCount, set
     color: confettiColors[i % confettiColors.length],
   }));
 
+  const badgeName = BADGE_TITLES[badgeCount] || "Planet Guardian";
+
   return (
     <div className="flex items-center justify-center min-h-screen p-4 relative overflow-hidden">
       {confettiPieces.map((p, i) => (
@@ -37,9 +40,9 @@ const BadgeAwardedScreen: React.FC<BadgeAwardedScreenProps> = ({ badgeCount, set
       ))}
       <Card variant="default" className="relative z-10">
         <div className="text-9xl animate-bounce">🏆</div>
-        <h1 className="text-4xl font-black my-2 text-sun-yellow-dark drop-shadow-md">Badge Awarded!</h1>
+        <h1 className="text-4xl font-black my-2 text-sun-yellow-dark drop-shadow-md">{badgeName}!</h1>
         <p className="text-xl font-bold text-text-dark mb-6">
-          You are an Eco Hero! This is your badge #{badgeCount}.
+          You have been awarded badge #{badgeCount}.
         </p>
         <p className="mb-6">Keep up the amazing work protecting our planet!</p>
         <Button variant="warning" onClick={() => setView('kid-home')}>

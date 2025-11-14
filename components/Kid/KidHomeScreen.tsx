@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppState, View } from '../../types';
 import EarthVisual from './EarthVisual';
 import Button from '../UI/Button';
 import Card from '../UI/Card';
+import { BADGE_TITLES, TEN_MINUTES_MS } from '../../constants';
 
 interface KidHomeScreenProps {
   state: AppState;
   setView: React.Dispatch<React.SetStateAction<View>>;
 }
+
+const isNewDay = (lastTimestamp: number | null): boolean => {
+    if (!lastTimestamp) {
+        return true;
+    }
+    const lastDate = new Date(lastTimestamp).toDateString();
+    const currentDate = new Date().toDateString();
+    return lastDate !== currentDate;
+};
+
 
 const KidHomeScreen: React.FC<KidHomeScreenProps> = ({ state, setView }) => {
   const isRepairEnabled = state.earthState === 'Damaged' || state.earthState === 'Critical';
@@ -17,15 +28,80 @@ const KidHomeScreen: React.FC<KidHomeScreenProps> = ({ state, setView }) => {
     Critical: "Earth is in critical condition!"
   };
 
+  const [storyCooldownRemaining, setStoryCooldownRemaining] = useState(0);
+
+  const hasCheckedInToday = state.lastCheckInTimestamp ? !isNewDay(state.lastCheckInTimestamp) : false;
+
+  useEffect(() => {
+    let intervalId: number | undefined;
+    if (hasCheckedInToday && state.lastStoryCompletionTimestamp) {
+      const timeSinceCompletion = Date.now() - state.lastStoryCompletionTimestamp;
+      const remaining = TEN_MINUTES_MS - timeSinceCompletion;
+      
+      if (remaining > 0) {
+        setStoryCooldownRemaining(remaining);
+        intervalId = window.setInterval(() => {
+          setStoryCooldownRemaining(prev => {
+            if (prev <= 1000) {
+              if (intervalId) clearInterval(intervalId);
+              return 0;
+            }
+            return prev - 1000;
+          });
+        }, 1000);
+      } else {
+        setStoryCooldownRemaining(0);
+      }
+    } else {
+        setStoryCooldownRemaining(0);
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [state.lastStoryCompletionTimestamp, hasCheckedInToday]);
+
+  const isStoryOnCooldown = storyCooldownRemaining > 0;
+  const isStoryFeatureUnlocked = hasCheckedInToday;
+  const storyButtonDisabled = !isStoryFeatureUnlocked || isStoryOnCooldown;
+
+  const formatTime = (ms: number) => {
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  let storyButtonText = "Complete Check-In for Stories";
+  if (isStoryFeatureUnlocked) {
+    if (isStoryOnCooldown) {
+      storyButtonText = `Next Story in (${formatTime(storyCooldownRemaining)})`;
+    } else {
+      storyButtonText = "Read Next Story!";
+    }
+  }
+
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <Card variant="home" className="flex flex-col h-[90vh] max-h-[700px]">
-        <header className="flex justify-between items-center w-full mb-2">
-            <div className="bg-white/30 rounded-full px-4 py-1 flex items-center space-x-2">
-                <span className="text-xl">🍃</span>
-                <span className="font-bold text-2xl">{state.shieldsRemaining}</span>
+      <Card variant="home" className="flex flex-col h-[90vh] max-h-[750px]">
+        <header className="flex justify-between items-start w-full mb-2">
+            <div className="flex items-center space-x-2 flex-wrap gap-y-2">
+              <div className="bg-white/30 rounded-full px-4 py-1 flex items-center space-x-2">
+                  <span className="text-xl">🍃</span>
+                  <span className="font-bold text-2xl">{state.shieldsRemaining}</span>
+              </div>
+              <div className="bg-white/30 rounded-full px-4 py-1 flex items-center space-x-2">
+                  <span className="text-xl">🔥</span>
+                  <span className="font-bold text-2xl">{state.streak}</span>
+              </div>
+              {state.badgeCount > 0 && (
+                <div className="bg-white/30 rounded-full px-4 py-1 flex items-center space-x-2">
+                  <span className="text-xl">🏆</span>
+                  <span className="font-bold text-md">{BADGE_TITLES[state.badgeCount]}</span>
+                </div>
+              )}
             </div>
-            <button onClick={() => setView('dev-unlock')} className="text-xs text-white/70 hover:text-white font-bold">
+            <button onClick={() => setView('dev-unlock')} className="text-xs text-white/70 hover:text-white font-bold flex-shrink-0">
                 Dev
             </button>
         </header>
@@ -70,6 +146,18 @@ const KidHomeScreen: React.FC<KidHomeScreenProps> = ({ state, setView }) => {
             </Button>
             <Button layout="icon-top" variant="home-blue" icon="📸" onClick={() => setView('kid-upload')}>
                 Eco Photo
+            </Button>
+        </div>
+         <div className="mt-4">
+            <Button
+                layout="icon-left"
+                icon="📖"
+                variant={isStoryFeatureUnlocked && !isStoryOnCooldown ? 'secondary' : 'primary'}
+                onClick={() => setView('kid-story')}
+                disabled={storyButtonDisabled}
+                className="!rounded-2xl"
+            >
+                {storyButtonText}
             </Button>
         </div>
       </Card>
