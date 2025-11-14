@@ -29,14 +29,16 @@ const EcoStoryScreen: React.FC<EcoStoryScreenProps> = ({ story, onStoryComplete,
   const [zoneFeedback, setZoneFeedback] = useState<Record<number, 'success' | 'failure' | null>>({});
 
   const interactionAreaRef = useRef<HTMLDivElement>(null);
-  const gameLoopRef = useRef<number>();
-  const spawnIntervalRef = useRef<number>();
+  // FIX: Initialize timer refs with null for type safety and explicit state.
+  const gameLoopRef = useRef<number | null>(null);
+  const spawnIntervalRef = useRef<number | null>(null);
   const nextItemId = useRef(0);
   const currentPage = story.pages[pageIndex];
 
   const cleanupGame = useCallback(() => {
-    if (spawnIntervalRef.current) clearInterval(spawnIntervalRef.current);
-    if (gameLoopRef.current) cancelAnimationFrame(gameLoopRef.current);
+    // FIX: Use strict null check for clearing timers to handle all IDs correctly (including 0).
+    if (spawnIntervalRef.current !== null) clearInterval(spawnIntervalRef.current);
+    if (gameLoopRef.current !== null) cancelAnimationFrame(gameLoopRef.current);
   }, []);
 
   useEffect(() => {

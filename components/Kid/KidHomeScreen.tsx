@@ -61,7 +61,7 @@ const KidHomeScreen: React.FC<KidHomeScreenProps> = ({ state, setView }) => {
   }, [state.lastStoryCompletionTimestamp, hasCheckedInToday]);
 
   const isStoryOnCooldown = storyCooldownRemaining > 0;
-  const isStoryFeatureUnlocked = hasCheckedInToday;
+  const isStoryFeatureUnlocked = hasCheckedInToday && !state.lastCheckInWasSkip;
   const storyButtonDisabled = !isStoryFeatureUnlocked || isStoryOnCooldown;
 
   const formatTime = (ms: number) => {

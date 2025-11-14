@@ -44,14 +44,16 @@
               'gentle-float': 'gentle-float 6s ease-in-out infinite',
               'swoop': 'swoop 15s ease-in-out infinite',
               'rotate-earth': 'rotate-earth 30s linear infinite',
-              'rotate-clouds': 'rotate-earth 50s linear infinite', // Slower cloud rotation
-              'peek-a-boo': 'peek-a-boo 8s ease-in-out infinite',
-              'swim-around': 'swim-around 18s linear infinite',
+              'rotate-clouds': 'rotate-earth 50s linear infinite',
               'confetti-fall': 'confetti-fall 3s linear infinite',
               'wobble': 'wobble 0.8s ease-in-out',
               'shimmer': 'shimmer 2s ease-in-out infinite',
               'burst-fade': 'burst-fade 0.5s ease-out forwards',
               'popup-fade': 'popup-fade 1.5s ease-out forwards',
+              'flutter': 'flutter 0.4s ease-in-out',
+              'walk-across': 'walk-across 20s linear infinite',
+              'swim-jump': 'swim-jump 15s ease-in-out infinite',
+              'rain-fall': 'rain-fall 1s ease-in forwards',
             },
             keyframes: {
               float: {
@@ -70,17 +72,6 @@
               'rotate-earth': {
                 'from': { backgroundPosition: '0% center' },
                 'to': { backgroundPosition: '200% center' },
-              },
-              'peek-a-boo': {
-                '0%, 40%, 100%': { transform: 'translateX(100%)' },
-                '50%, 90%': { transform: 'translateX(10%)' },
-              },
-              'swim-around': {
-                '0%': { transform: 'translateX(-30%) rotateY(0deg) ' },
-                '48%': { transform: 'translateX(110%) rotateY(0deg)' },
-                '50%': { transform: 'translateX(110%) rotateY(180deg)' },
-                '98%': { transform: 'translateX(-30%) rotateY(180deg)' },
-                '100%': { transform: 'translateX(-30%) rotateY(0deg)' },
               },
               'confetti-fall': {
                 '0%': { transform: 'translateY(-10vh) rotate(0deg)' },
@@ -105,6 +96,31 @@
               'popup-fade': {
                 '0%': { transform: 'translate(-50%, -50%) scale(0.5)', opacity: 1 },
                 '100%': { transform: 'translate(-50%, -150%) scale(1)', opacity: 0 },
+              },
+              flutter: {
+                '0%, 100%': { transform: 'scale(1) rotate(0deg)' },
+                '25%': { transform: 'scale(1.1) rotate(15deg)' },
+                '50%': { transform: 'scale(0.9) rotate(-15deg)' },
+                '75%': { transform: 'scale(1.1) rotate(10deg)' },
+              },
+              'walk-across': {
+                '0%': { left: '-20%', transform: 'scaleX(1)' },
+                '48%': { left: '100%', transform: 'scaleX(1)' },
+                '52%': { left: '100%', transform: 'scaleX(-1)' },
+                '98%': { left: '-20%', transform: 'scaleX(-1)' },
+                '100%': { left: '-20%', transform: 'scaleX(1)' },
+              },
+              'swim-jump': {
+                '0%': { left: '-20%', transform: 'translateY(0) scaleX(1)' },
+                '25%': { transform: 'translateY(-60px) rotate(-15deg) scaleX(1)' },
+                '50%': { left: '100%', transform: 'translateY(0) scaleX(1)' },
+                '51%': { left: '100%', transform: 'translateY(0) scaleX(-1)' },
+                '75%': { transform: 'translateY(-60px) rotate(15deg) scaleX(-1)' },
+                '100%': { left: '-20%', transform: 'translateY(0) scaleX(-1)' },
+              },
+              'rain-fall': {
+                '0%': { transform: 'translateY(0)', opacity: 1 },
+                '100%': { transform: 'translateY(60px)', opacity: 0 },
               }
             }
           }

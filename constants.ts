@@ -26,4 +26,5 @@ export const INITIAL_STATE: AppState = {
   lastUploadTimestamp: null,
   storyIndex: 0,
   lastStoryCompletionTimestamp: null,
+  lastCheckInWasSkip: false,
 };

@@ -52,6 +52,7 @@ function App() {
         consecutiveMisses: 0,
         streak: newStreak,
         shieldsRemaining: newShields,
+        lastCheckInWasSkip: false,
       };
     });
     setView('kid-home');
@@ -67,7 +68,7 @@ function App() {
     
     // Set timestamp immediately for 'yes' to unlock story button
     if (result === 'yes') {
-      setAppState(prev => ({...prev, lastCheckInTimestamp: now}));
+      setAppState(prev => ({...prev, lastCheckInTimestamp: now, lastCheckInWasSkip: false}));
       setView('kid-sapling-game');
       return;
     }
@@ -98,6 +99,7 @@ function App() {
           consecutiveMisses: 0,
           streak: newStreak,
           shieldsRemaining: newShields,
+          lastCheckInWasSkip: false,
         };
       });
        setView('kid-home');
@@ -128,6 +130,7 @@ function App() {
           earthState: newEarthState,
           streak: 0, // Reset streak on a miss
           lastCheckInTimestamp: now,
+          lastCheckInWasSkip: true,
         };
       });
        setView('kid-home');

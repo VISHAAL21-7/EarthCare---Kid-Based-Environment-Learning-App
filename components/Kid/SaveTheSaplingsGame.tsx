@@ -7,8 +7,8 @@ const ITEM_SPAWN_INTERVAL = 1800;
 const BASE_FALL_SPEED = 0.9;
 
 // --- TYPES ---
-type ZoneType = 'forest' | 'park' | 'desert' | 'island' | 'garden' | 'compost';
-type SaplingType = 'pine' | 'oak' | 'cherry' | 'cactus' | 'palm' | 'bush' | 'withered';
+type ZoneType = 'forest' | 'park' | 'desert' | 'island' | 'garden' | 'compost' | 'cave' | 'pond' | 'swamp' | 'mountain' | 'crystal_cave';
+type SaplingType = 'pine' | 'oak' | 'cherry' | 'cactus' | 'palm' | 'bush' | 'withered' | 'mushroom' | 'water_lily' | 'mangrove' | 'mountain_flower' | 'crystal';
 
 interface ZoneVariation {
   name: string;
@@ -32,11 +32,16 @@ const ZONE_VARIATIONS: Record<ZoneType, ZoneVariation[]> = {
   island: [{ name: 'Tropical Island', emoji: '🏝️', bg: 'bg-gradient-to-br from-cyan-400 to-blue-600' }],
   garden: [{ name: 'Garden', emoji: '⛲', bg: 'bg-gradient-to-br from-pink-400 to-purple-500' }],
   compost: [{ name: 'Compost Bin', emoji: '🗑️', bg: 'bg-gradient-to-br from-yellow-800 to-yellow-900' }],
+  cave: [{ name: 'Echo Cave', emoji: '🦇', bg: 'bg-gradient-to-br from-gray-700 to-gray-900', decoration: { emoji: '🕸️', className: 'absolute -top-1 -right-1 text-2xl opacity-60' } }],
+  pond: [{ name: 'Lily Pond', emoji: '💧', bg: 'bg-gradient-to-br from-teal-400 to-cyan-600', decoration: { emoji: '🐸', className: 'absolute -bottom-1 -left-1 text-2xl opacity-80' } }],
+  swamp: [{ name: 'Murky Swamp', emoji: '🐊', bg: 'bg-gradient-to-br from-lime-800 to-green-900', decoration: { emoji: '🦟', className: 'absolute top-0 right-1 text-xl opacity-70' } }],
+  mountain: [{ name: 'High Peaks', emoji: '⛰️', bg: 'bg-gradient-to-br from-slate-400 to-slate-600', decoration: { emoji: '🦅', className: 'absolute top-0 left-0 text-2xl opacity-70' } }],
+  crystal_cave: [{ name: 'Gem Grotto', emoji: '✨', bg: 'bg-gradient-to-br from-purple-600 to-indigo-800', decoration: { emoji: '🔮', className: 'absolute bottom-0 right-0 text-2xl opacity-70' } }],
 };
 const ALL_ZONES = Object.keys(ZONE_VARIATIONS) as ZoneType[];
 
 
-const ALL_SAPLING_TYPES: SaplingType[] = ['pine', 'oak', 'cherry', 'cactus', 'palm', 'bush', 'withered'];
+const ALL_SAPLING_TYPES: SaplingType[] = ['pine', 'oak', 'cherry', 'cactus', 'palm', 'bush', 'withered', 'mushroom', 'water_lily', 'mangrove', 'mountain_flower', 'crystal'];
 
 const SAPLING_TO_ZONE: Record<SaplingType, ZoneType> = {
   pine: 'forest', oak: 'forest',
@@ -45,6 +50,11 @@ const SAPLING_TO_ZONE: Record<SaplingType, ZoneType> = {
   palm: 'island',
   bush: 'garden',
   withered: 'compost',
+  mushroom: 'cave',
+  water_lily: 'pond',
+  mangrove: 'swamp',
+  mountain_flower: 'mountain',
+  crystal: 'crystal_cave',
 };
 
 const SAPLING_CONFIG: Record<SaplingType, { emoji: string; name: string }> = {
@@ -55,6 +65,11 @@ const SAPLING_CONFIG: Record<SaplingType, { emoji: string; name: string }> = {
   palm: { emoji: '🌴', name: 'Palm' },
   bush: { emoji: '🌷', name: 'Flowering Bush' },
   withered: { emoji: '🥀', name: 'Withered Sapling' },
+  mushroom: { emoji: '🍄', name: 'Mushroom' },
+  water_lily: { emoji: '🪷', name: 'Water Lily' },
+  mangrove: { emoji: '🌿', name: 'Mangrove' },
+  mountain_flower: { emoji: '💮', name: 'Mtn. Flower' },
+  crystal: { emoji: '💎', name: 'Crystal' },
 };
 
 interface Sapling {
@@ -86,8 +101,8 @@ const SaveTheSaplingsGame: React.FC<{ onGameComplete: () => void }> = ({ onGameC
   const [items, setItems] = useState<GameItem[]>([]);
   const [savedCount, setSavedCount] = useState(0);
   const [draggedSapling, setDraggedSapling] = useState<{ sapling: Sapling, offset: { x: number, y: number } } | null>(null);
-  const [zoneFeedback, setZoneFeedback] = useState<Record<ZoneType, ZoneFeedback>>({ forest: null, park: null, desert: null, island: null, garden: null, compost: null });
-  const [savedInZone, setSavedInZone] = useState<Record<ZoneType, {emoji: string}[]>>({ forest: [], park: [], desert: [], island: [], garden: [], compost: [] });
+  const [zoneFeedback, setZoneFeedback] = useState<Record<string, ZoneFeedback>>({});
+  const [savedInZone, setSavedInZone] = useState<Record<string, {emoji: string}[]>>({});
   const [combo, setCombo] = useState(0);
   const [isSlowed, setIsSlowed] = useState(false);
   const [effects, setEffects] = useState<{ id: number, x: number, y: number, emoji: string }[]>([]);
@@ -107,8 +122,9 @@ const SaveTheSaplingsGame: React.FC<{ onGameComplete: () => void }> = ({ onGameC
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const zoneRefs = ALL_ZONES.reduce((acc, type) => ({ ...acc, [type]: React.createRef<HTMLDivElement>() }), {} as Record<ZoneType, React.RefObject<HTMLDivElement>>);
   const nextId = useRef(0);
-  const animationFrameRef = useRef<number>();
-  const spawnIntervalRef = useRef<number>();
+  // FIX: Initialize timer refs with null for type safety and explicit state.
+  const animationFrameRef = useRef<number | null>(null);
+  const spawnIntervalRef = useRef<number | null>(null);
 
   const fallSpeed = isSlowed ? BASE_FALL_SPEED * 0.5 : BASE_FALL_SPEED;
 
@@ -118,8 +134,15 @@ const SaveTheSaplingsGame: React.FC<{ onGameComplete: () => void }> = ({ onGameC
   }, [fallSpeed]);
 
   useEffect(() => {
+    // Initialize state for all zones
+    const initialZoneState = ALL_ZONES.reduce((acc, zone) => ({ ...acc, [zone]: null }), {});
+    const initialSavedInZoneState = ALL_ZONES.reduce((acc, zone) => ({ ...acc, [zone]: [] }), {});
+    setZoneFeedback(initialZoneState);
+    setSavedInZone(initialSavedInZoneState);
+
     animationFrameRef.current = requestAnimationFrame(gameLoop);
-    return () => { if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current); };
+    // FIX: Use strict null check for clearing timers to handle all IDs correctly (including 0).
+    return () => { if (animationFrameRef.current !== null) cancelAnimationFrame(animationFrameRef.current); };
   }, [gameLoop]);
 
   useEffect(() => {
@@ -138,13 +161,14 @@ const SaveTheSaplingsGame: React.FC<{ onGameComplete: () => void }> = ({ onGameC
       setItems(prev => [...prev, newItem]);
     };
     spawnIntervalRef.current = window.setInterval(spawnItem, ITEM_SPAWN_INTERVAL);
-    return () => clearInterval(spawnIntervalRef.current);
+    // FIX: Use strict null check for clearing timers to handle all IDs correctly (including 0).
+    return () => { if (spawnIntervalRef.current !== null) clearInterval(spawnIntervalRef.current); };
   }, [items.length, savedCount]);
   
   useEffect(() => {
     if (savedCount >= TOTAL_ITEMS_TO_SAVE && !isComplete) {
       setIsComplete(true);
-      clearInterval(spawnIntervalRef.current);
+      if (spawnIntervalRef.current !== null) clearInterval(spawnIntervalRef.current);
       setTimeout(() => onGameComplete(), 3000);
     }
   }, [savedCount, onGameComplete, isComplete]);
@@ -288,21 +312,21 @@ const SaveTheSaplingsGame: React.FC<{ onGameComplete: () => void }> = ({ onGameC
           {popupMessage && <div className="absolute text-white font-bold bg-black/40 px-3 py-1 rounded-full pointer-events-none animate-popup-fade" style={{ left: popupMessage.x, top: popupMessage.y }}>{popupMessage.text}</div>}
         </main>
         
-        <footer className="h-64 bg-green-400/50 grid grid-cols-3 grid-rows-2 gap-1 p-1 border-t-8 border-green-600/50 z-20">
+        <footer className="h-80 bg-green-400/50 grid grid-cols-4 grid-rows-3 gap-1 p-1 border-t-8 border-green-600/50 z-20">
             {ALL_ZONES.map(type => {
                 const config = zoneConfig[type];
                 const feedbackClass = zoneFeedback[type] === 'success' ? 'scale-110 border-yellow-300 ring-4 ring-yellow-300/70' : zoneFeedback[type] === 'failure' ? 'scale-95 border-red-400 animate-wobble' : '';
                 return (
                     <div key={type} ref={zoneRefs[type]} className={`h-full flex flex-col items-center justify-center pt-2 rounded-xl transition-all duration-200 ${config.bg} text-white shadow-inner-cute border-4 border-white/30 ${feedbackClass} relative overflow-hidden`}>
-                        <div className="text-4xl z-10">{config.emoji}</div>
-                        <p className="font-bold text-[10px] sm:text-xs mt-1 text-center z-10">{config.name}</p>
+                        <div className="text-3xl z-10">{config.emoji}</div>
+                        <p className="font-bold text-[9px] sm:text-[10px] mt-1 text-center z-10">{config.name}</p>
                         {config.decoration && (
                             <span className={config.decoration.className}>
                                 {config.decoration.emoji}
                             </span>
                         )}
                         <div className="absolute bottom-0 left-0 w-full h-1/3 flex items-end justify-center gap-0.5">
-                            {savedInZone[type].slice(-5).map((s, i) => <span key={i} className="text-lg">{s.emoji}</span>)}
+                            {savedInZone[type]?.slice(-3).map((s, i) => <span key={i} className="text-base">{s.emoji}</span>)}
                         </div>
                     </div>
                 );

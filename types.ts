@@ -14,6 +14,7 @@ export interface AppState {
   lastUploadTimestamp: number | null;
   storyIndex: number;
   lastStoryCompletionTimestamp: number | null;
+  lastCheckInWasSkip: boolean;
 }
 
 export type View = 
